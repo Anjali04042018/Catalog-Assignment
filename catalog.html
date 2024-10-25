@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shamir's Secret Sharing - Constant Term Calculation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #output {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shamir's Secret Sharing - Constant Term Calculation</h1>
+    <div id="output"></div>
+
+    <script>
+        async function fetchJsonData() {
+            const response = await fetch('t1.json');
+           // const response = await fetch('t2.json');
+            return await response.json();
+        }
+
+        function decodeValue(base, value) {
+            const decoded = parseInt(value, parseInt(base));
+            console.log(`Decoded value from base ${base} (${value}) to ${decoded}`);
+            return decoded;
+        }
+
+        function lagrangeInterpolation(xValues, yValues) {
+            const k = xValues.length;
+            let c = 0;
+
+            for (let i = 0; i < k; i++) {
+                let term = yValues[i];
+                let basis = 1; // Initialize basis polynomial L_i(0)
+
+                for (let j = 0; j < k; j++) {
+                    if (i !== j) {
+                        basis *= (0 - xValues[j]) / (xValues[i] - xValues[j]);
+                    }
+                }
+                c += term * basis; // Correctly calculate c
+            }
+
+            return Math.round(c); // Round to nearest integer
+        }
+
+        async function calculateConstantTerm() {
+            const data = await fetchJsonData();
+
+            const n = data.keys.n;
+            const k = data.keys.k;
+
+            let xValues = [];
+            let yValues = [];
+
+            // Extract roots
+            for (let i = 1; i <= n; i++) {
+                const root = data[i];
+                if (root) {
+                    const x = i;
+                    const y = decodeValue(root.base, root.value);
+                    xValues.push(x);
+                    yValues.push(y);
+                }
+            }
+
+            console.log(`X values: ${xValues}`);
+            console.log(`Y values: ${yValues}`);
+
+            // Calculate constant term c using Lagrange interpolation
+            const c = lagrangeInterpolation(xValues, yValues);
+
+            // Display the result
+            document.getElementById('output').innerText = `The constant term c is: ${c}`;
+        }
+
+        // Start calculation on page load
+        calculateConstantTerm();
+    </script>
+</body>
+</html>
