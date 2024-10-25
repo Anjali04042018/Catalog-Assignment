@@ -1,7 +1,7 @@
 1.  Download or Clone the Project:
 
-  If using Git, clone the repository
-  If not using Git, download the project files as a ZIP and extract them.
+If using Git, clone the repository
+If not using Git, download the project files as a ZIP and extract them.
 
 2. Open the HTML File:
 
